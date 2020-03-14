@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>VAE Explorer</title>
+    <script src="https://d3js.org/d3.v5.js"></script>
+    <script src="https://d3js.org/d3-array.v2.min.js"></script>
+    <script src="https://d3js.org/d3-color.v1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body id ='body'>
+<nav class="navbar navbar-dark bg-dark">
+    <h4 style="color: white; padding-left: 50px">VAE Explorer</h4>
+</nav>
+<div class="container" style="margin-top: 20px">
+    <div class="row">
+        <div class="col-9 border-primary border" id="chartDiv">
+            <div class="row" style="text-align: center">
+                <div class="col" style="padding-top: 10px">
+                    <h5>Latent Space Exploration</h5>
+                </div>
+                <div class="col" style="padding-top: 10px">
+                    <h5 id="reductionProgress">Progress: </h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <svg id="pointChart" width="650" height="700"></svg>
+                </div>
+                <div class="col">
+                    <div class="row border-top border-left border-primary" style="text-align: center; padding-top: 40px">
+                        <div class="col">
+                            <h5>Original</h5>
+                        </div>
+                        <div class="col">
+                            <h5>Reconstruction</h5>
+                        </div>
+                    </div>
+                    <div class="row border-primary border-left" style="min-height: 100px">
+                        <div class="col" style="text-align: center">
+                            <div class='border border-left' id="canvasDivOriginal">
+                                <canvas width="84" height="84" id="originalCanvas">
+
+                                </canvas>
+                            </div>
+                        </div>
+                        <div class="col" style="text-align: center">
+                            <div class='border border-right' id="canvasDivReconstruction">
+                                <canvas width="84" height="84" id="reconstructedCanvas">
+
+                                </canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row border-primary border-left border-bottom" style="text-align: center; padding-top: 20px">
+                        <div class="col">
+                            <h4 id="xValue">X: 1.4</h4>
+                        </div>
+                        <div class="col">
+                            <h4 id="yValue">Y: 1.7</h4>
+                        </div>
+                    </div>
+                    <div class="row" style="padding-top: 20px">
+                        <div class="col" style="text-align: center">
+                            <h6>Select 2 points to interpolate between them.</h6>
+                        </div>
+                    </div>
+                    <div class="row hideIt" id="interpolateRow" style="padding-top: 30px">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="border-primary col-3 border-top border-right border-bottom">
+            <div class="row border-primary border-bottom" style="text-align: center">
+                <div class="col">
+                    <h4>Settings</h4>
+                </div>
+            </div>
+            <div class="row" style="padding-top: 20px">
+                <div class="col">
+                    <h5>Model:</h5>
+                </div>
+                <div class="col">
+                    <!-- https://getbootstrap.com/docs/4.4/components/dropdowns/-->
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="modelDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            CVAE - MNIST
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="modelDropdownMenuButton">
+                            <a class="dropdown-item" href="#" id="cvaeMnist">CVAE - MNIST</a>
+                            <a class="dropdown-item" href="#" id="cvaeFashion">CVAE - Fashion</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="padding-top: 20px">
+                <div class="col">
+                    <h5>Latent Dimension:</h5>
+                </div>
+                <div class="col">
+                    <!-- https://getbootstrap.com/docs/4.4/components/dropdowns/-->
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="latentDimensionSizeDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        2
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="latentDropdownMenuButton">
+                        <a class="dropdown-item" href="#" id="latent2">2</a>
+                        <a class="dropdown-item" href="#" id="latent10">10</a>
+                        <a class="dropdown-item" href="#" id="latent50">50</a>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="padding-top: 20px" id="dimReductionDiv">
+                <div class="col">
+                    <h5>Dimensionality Reduction:</h5>
+                </div>
+                <div class="col">
+                    <!-- https://getbootstrap.com/docs/4.4/components/dropdowns/-->
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dimReductionDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        UMAP
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dimReductionButton">
+                        <a class="dropdown-item" href="#" id="UMAP">UMAP</a>
+                        <a class="dropdown-item" href="#" id="t-SNE">t-SNE</a>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="padding-top: 20px; padding-bottom: 10px">
+                <div class="col" style="text-align: center">
+                    <!-- https://getbootstrap.com/docs/4.4/components/buttons/ -->
+                    <button type="button" class="btn btn-primary" id="updateButton">Update Config</button>
+                </div>
+            </div>
+            <div class="row" id="samplesRow">
+                <div class="col">
+                    <div class="border-primary border-top row" style="padding-top: 30px">
+                        <div class="col">
+                            <h5>Samples</h5>
+                        </div>
+                    </div>
+                    <div class="row" style="text-align: center">
+                        <div class="col">
+                            <h6>Original Images</h6>
+                        </div>
+                        <div class="col">
+                            <h6>Recreated Images</h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <canvas width="84" height="84" id="mnistCanvas0"></canvas>
+                                </div>
+                                <div class="col">
+                                    <canvas width="84" height="84" id="mnistCanvas1"></canvas>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <canvas width="84" height="84" id="mnistCanvas2"></canvas>
+                                </div>
+                                <div class="col">
+                                    <canvas width="84" height="84" id="mnistCanvas3"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                    <canvas width="84" height="84" id="mnistCanvasRec0"></canvas>
+                                </div>
+                                <div class="col">
+                                    <canvas width="84" height="84" id="mnistCanvasRec1"></canvas>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <canvas width="84" height="84" id="mnistCanvasRec2"></canvas>
+                                </div>
+                                <div class="col">
+                                    <canvas width="84" height="84" id="mnistCanvasRec3"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="text-align: center">
+                        <div class="col">
+                            <button type="button" class="btn btn-primary" id="mnistButton">New Data</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row border-left border-right border-bottom border-primary" style="text-align: center">
+        <div class="col" style="padding-top: 20px">
+            <h6>Tensorflow.js</h6>
+            <p>This website runs the CVAEs using <a target="_blank" href="https://www.tensorflow.org/js">Tensorflow.js</a>.</p>
+            <p>Tensorflow.js can run specific types of Python Tensorflow models after they are converted (<a target="_blank" href="https://www.tensorflow.org/js/tutorials/conversion/import_keras">info</a>).</p>
+        </div>
+        <div class="col" style="padding-top: 20px">
+            <h6>Attribution</h6>
+            <p>CVAEs created by altering a <a target="_blank" href="https://research.google.com/seedbank/">Seedbank</a> notebook (<a target="_blank" href="https://colab.research.google.com/github/tensorflow/docs/blob/master/site/en/tutorials/generative/cvae.ipynb">link</a>). Used under Apache License v2.0</p>
+            <p>UMAP-js library used to perform UMAP (<a target="_blank" href="https://github.com/PAIR-code/umap-js">link</a>). Used under Apache License v2.0.</p>
+            <p>tSNE-js library used to perform t-SNE (<a target="_blank" href="https://github.com/scienceai/tsne-js">link</a>). Used under Apache License v2.0.</p>
+            <p>Datasets used are <a target="_blank" href="http://yann.lecun.com/exdb/mnist/">MNIST</a> and <a target="_blank" href="https://github.com/zalandoresearch/fashion-mnist">Fashion MNIST</a>.</p>
+            <p>Website made with <a target="_blank" href="https://getbootstrap.com/">Bootstrap</a> and <a target="_blank" href="https://d3js.org/">D3</a>.</p>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.2.7/dist/tf.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script type="application/javascript" src="js/vae.js"></script>
+<script type="application/javascript" src="js/point-chart.js"></script>
+<script type="application/javascript" src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1650px;
+    }
+}
+
+body {
+    background: lightgray;
+}
+
+div {
+    background: white;
+}
+
+header {
+    text-align: center;
+}
+
+canvas {
+    /* Center canvas in div container. */
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+p {
+    margin: 2px;
+}
+
+.point:hover {
+    fill: black;
+}
+
+.hideIt {
+    display: none;
+}
+
+.selected1 {
+    stroke: red;
+    stroke-width: 5;
+}
+
+.selected2 {
+    stroke: blue;
+    stroke-width: 5;
+}
