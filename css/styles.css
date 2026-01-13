@@ -1,46 +1,274 @@
+:root {
+    --bg0: #070a12;
+    --bg1: #0b1224;
+    --panel: rgba(255, 255, 255, 0.92);
+    --panelSolid: #ffffff;
+    --text: #0f172a;
+    --muted: #475569;
+    --border: rgba(15, 23, 42, 0.10);
+    --borderStrong: rgba(15, 23, 42, 0.16);
+    --shadow: 0 18px 50px rgba(2, 6, 23, 0.22);
+    --shadowSoft: 0 10px 30px rgba(2, 6, 23, 0.12);
+    --ring: 0 0 0 4px rgba(99, 102, 241, 0.22);
+    --accent: #6366f1; /* indigo-500 */
+    --accent2: #22c55e; /* green-500 */
+    --danger: #ef4444; /* red-500 */
+    --info: #3b82f6; /* blue-500 */
+}
+
+/* --- Page base --- */
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji",
+        "Segoe UI Emoji";
+    color: var(--text);
+    background:
+        radial-gradient(1100px 800px at 18% 0%, rgba(99, 102, 241, 0.35) 0%, rgba(99, 102, 241, 0) 60%),
+        radial-gradient(900px 700px at 85% 15%, rgba(34, 197, 94, 0.25) 0%, rgba(34, 197, 94, 0) 55%),
+        linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 100%);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Let Bootstrap typography breathe a bit more */
+h4, h5, h6 {
+    letter-spacing: -0.01em;
+}
+
+a {
+    color: #2563eb;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+/* --- Layout sizing --- */
 @media (min-width: 1200px) {
     .container {
         max-width: 1650px;
     }
 }
 
-body {
-    background: lightgray;
+.container {
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
-div {
-    background: white;
+/* --- Top nav --- */
+.navbar.app-nav {
+    background: rgba(2, 6, 23, 0.68) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-header {
-    text-align: center;
+.app-title {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 650;
+    letter-spacing: -0.02em;
 }
 
+.app-title small {
+    display: block;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.70);
+    letter-spacing: 0;
+    margin-top: 2px;
+}
+
+/* --- Panels/cards --- */
+.app-panel {
+    background: var(--panel);
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.app-panel .panel-header {
+    padding: 16px 18px;
+    background: rgba(255, 255, 255, 0.70);
+    border-bottom: 1px solid var(--border);
+}
+
+.app-panel .panel-body {
+    padding: 16px 18px;
+}
+
+.panel-title {
+    margin: 0;
+    font-weight: 650;
+    font-size: 1.05rem;
+}
+
+.panel-subtitle {
+    margin: 6px 0 0 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+/* --- Chart area --- */
+#chartDiv {
+    padding: 0;
+}
+
+#reductionProgress {
+    color: var(--muted);
+    font-weight: 600;
+}
+
+#pointChart {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadowSoft);
+}
+
+/* Axis styling */
+#g-x-axis text,
+#g-y-axis text {
+    font-size: 12px;
+    fill: rgba(15, 23, 42, 0.75);
+}
+
+#g-x-axis path,
+#g-y-axis path,
+#g-x-axis line,
+#g-y-axis line {
+    stroke: rgba(15, 23, 42, 0.18);
+}
+
+/* --- Image canvases --- */
 canvas {
     /* Center canvas in div container. */
     margin-left: auto;
     margin-right: auto;
     display: block;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(2, 6, 23, 0.10);
 }
 
+#canvasDivOriginal,
+#canvasDivReconstruction {
+    padding: 10px 8px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.66);
+}
+
+/* Selected points canvases created dynamically */
+#selectedPoint1Canvas,
+#selectedPoint2Canvas,
+[id^="interpolateCanvas"] {
+    border-radius: 10px;
+}
+
+/* --- Controls --- */
+.btn {
+    border-radius: 12px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    box-shadow: 0 8px 22px rgba(2, 6, 23, 0.10);
+}
+
+.btn:focus,
+.btn.focus {
+    box-shadow: var(--ring) !important;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    filter: brightness(1.02);
+}
+
+.btn-secondary {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.dropdown-menu {
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    box-shadow: 0 18px 55px rgba(2, 6, 23, 0.22);
+    padding: 10px;
+}
+
+.dropdown-item {
+    border-radius: 10px;
+    padding: 8px 10px;
+    font-weight: 550;
+}
+
+.dropdown-item:active {
+    background: rgba(99, 102, 241, 0.14);
+    color: var(--text);
+}
+
+/* --- Text spacing --- */
 p {
-    margin: 2px;
+    margin: 6px 0;
+    color: rgba(15, 23, 42, 0.72);
+}
+
+/* --- Point interactions (D3) --- */
+.point {
+    transition: filter 120ms ease, transform 120ms ease, opacity 120ms ease;
 }
 
 .point:hover {
-    fill: black;
+    filter: drop-shadow(0 10px 18px rgba(2, 6, 23, 0.18));
+}
+
+.selected1 {
+    stroke: var(--danger);
+    stroke-width: 4;
+    filter: drop-shadow(0 10px 18px rgba(239, 68, 68, 0.25));
+}
+
+.selected2 {
+    stroke: var(--info);
+    stroke-width: 4;
+    filter: drop-shadow(0 10px 18px rgba(59, 130, 246, 0.22));
 }
 
 .hideIt {
     display: none;
 }
 
-.selected1 {
-    stroke: red;
-    stroke-width: 5;
+/* --- Footer panels --- */
+.app-footer {
+    margin-top: 18px;
 }
 
-.selected2 {
-    stroke: blue;
-    stroke-width: 5;
+.app-footer h6 {
+    font-weight: 700;
+    color: rgba(15, 23, 42, 0.92);
+}
+
+.app-footer p {
+    color: rgba(15, 23, 42, 0.72);
+}
+
+/* --- Responsive polish --- */
+@media (max-width: 991.98px) {
+    #pointChart {
+        border-radius: 14px;
+    }
+    .container {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
 }
